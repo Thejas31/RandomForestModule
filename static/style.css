@@ -1,0 +1,148 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background-color: black;
+    color:white;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.sidebar {
+    width: 25%;
+    background-color: #000000;
+    color: #fff;
+    padding: 15px;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+}
+
+.main-content {
+    width: 75%;
+    padding: 20px;
+}
+
+h1 {
+    color:white;
+}
+
+h2 {
+    color: white;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    color: #ddd;
+    margin-top: 10px;
+}
+select{
+    height:35px;
+    border-radius: 10px;
+    background-color: #000000;
+    color:white;
+    border:2px solid #555;
+}
+button {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #e28a25;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+button:hover {
+    background-color: #ed942e;
+}
+
+.upload-area {
+    border: none;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 15px;
+    cursor: pointer;
+    background-color: #000000;
+}
+.checkbox-container {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-container input[type="checkbox"] {
+    margin-right: 5px; /* Adjust space as needed */
+}
+span{
+    color:white;
+}
+
+#filename {
+    font-weight: bold;
+    color: #ddd;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 15px;
+}
+input[type="range"] {
+    width: 80%;
+    margin-right: 10px;
+}
+
+span {
+    font-weight: bold;
+    color: white;
+}
+
+.upload-area {
+    border: 2px solid #555;
+    padding: 20px;
+    text-align: center;
+}
+.upload-area.drag-over {
+    border-color: #555;
+    background-color: #f0f8ff;
+}
+.data-preview-container {
+    margin-top: 20px;
+}
+.table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+.info-panel {
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #e7f1ff;
+    color: #007bff;
+    font-weight: bold;
+}
+.info-panel h5 {
+    margin-top: 10px;
+}
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: white;
+}

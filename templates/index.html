@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Random Forest Training Model</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar">
+        <h2>Upload Dataset</h2>
+
+        <form method="POST" enctype="multipart/form-data">
+          <div id="upload-area" class="upload-area">
+            Select File Format: CSV, Excel, TSV
+            <br /><br />
+            Drag and drop file here or
+            <br />
+            <input
+              type="file"
+              name="file"
+              id="fileInput"
+              style="display: none"
+            />
+            <button
+              type="button"
+              onclick="document.getElementById('fileInput').click()"
+            >
+              Browse files
+            </button>
+            <br />
+            <span id="filename">No file selected</span>
+          </div>
+          <button type="submit">Upload</button>
+        </form>
+
+        <form method="POST">
+          <h2>Statistical Summary</h2>
+          <button type="submit" name="action" value="Statistical Summary" class="btn btn-secondary">
+            Statistical Inference
+          </button>
+        </form>
+
+        <div class="preprocessing-section">
+          <h2>Advanced Data Preprocessing</h2>
+          <form method="POST">
+            <div class="form-group">
+              <label for="target_column">Target Column:</label>
+              <select name="target_column" id="target_column" class="form-control">
+                {% for column in columns %}
+                <option value="{{ column }}">{{ column }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Columns to Remove:</label>
+              <div class="checkbox-group">
+                {% for column in columns %}
+                <div class="form-check">
+                  <input type="checkbox" name="columns_to_remove" value="{{ column }}" id="remove_{{ column }}"
+                    class="form-check-input">
+                  <label class="form-check-label" for="remove_{{ column }}">
+                    {{ column }}
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="missing_strategy">Missing Value Strategy:</label>
+              <select name="missing_strategy" id="missing_strategy" class="form-control">
+                <option value="mean">Mean</option>
+                <option value="median">Median</option>
+                <option value="most_frequent">Most Frequent</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="scaling_method">Scaling Method:</label>
+              <select name="scaling_method" id="scaling_method" class="form-control">
+                <option value="standard">Standard Scaling</option>
+                <option value="minmax">Min-Max Scaling</option>
+                <option value="robust">Robust Scaling</option>
+                <option value="none">No Scaling</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="encoding_method">Encoding Method:</label>
+              <select name="encoding_method" id="encoding_method" class="form-control">
+                <option value="label">Label Encoding</option>
+                <option value="onehot">One-Hot Encoding</option>
+              </select>
+            </div>
+
+            <button type="submit" name="action" value="Apply Advanced Preprocessing" class="btn btn-primary">
+              Apply Advanced Preprocessing
+            </button>
+          </form>
+
+          {% if preprocess_message %}
+          <div class="alert alert-success mt-3">
+            {{ preprocess_message }}
+          </div>
+          {% endif %}
+        </div>
+
+        <h2>Data Visualization</h2>
+        <form method="POST">
+          <label>Plot Type:</label>
+          <select name="plot_type">
+            <option value="scatter">Scatter Plot</option>
+            <option value="line">Line Plot</option>
+            <option value="bar">Bar Plot</option>
+            <option value="hist">Histogram</option>
+          </select>
+
+          <label>X Axis:</label>
+          <select name="x_axis">
+            {% for column in columns %}
+            <option value="{{ column }}">{{ column }}</option>
+            {% endfor %}
+          </select>
+
+          <label>Y Axis:</label>
+          <select name="y_axis">
+            {% for column in columns %}
+            <option value="{{ column }}">{{ column }}</option>
+            {% endfor %}
+          </select>
+
+          <button type="submit" name="action" value="Generate Plot">
+            Generate Plot
+          </button>
+        </form>
+
+        <h2>Model Training and Evaluation</h2>
+        <form method="POST">
+          <label>Select Target Column:</label>
+          <select name="target">
+            {% for column in columns %}
+            <option value="{{ column }}">{{ column }}</option>
+            {% endfor %}
+          </select>
+
+          <label>Learning Rate: <span id="learningRateValue">0.1</span></label>
+          <input
+            type="range"
+            name="learning_rate"
+            min="0.01"
+            max="0.3"
+            step="0.01"
+            value="0.1"
+            oninput="document.getElementById('learningRateValue').textContent = this.value"
+          />
+
+          <label
+            >Number of Estimators: <span id="nEstimatorsValue">100</span></label
+          >
+          <input
+            type="range"
+            name="n_estimators"
+            min="50"
+            max="500"
+            step="50"
+            value="100"
+            oninput="document.getElementById('nEstimatorsValue').textContent = this.value"
+          />
+
+          <label>Max Depth: <span id="maxDepthValue">3</span></label>
+          <input
+            type="range"
+            name="max_depth"
+            min="3"
+            max="10"
+            step="1"
+            value="3"
+            oninput="document.getElementById('maxDepthValue').textContent = this.value"
+          />
+
+          <div class="checkbox-container">
+            <input
+              type="checkbox"
+              name="cross_validation"
+              id="crossValidation"
+            />
+            <label for="crossValidation">Enable Cross Validation</label>
+          </div>
+
+          <label>Optimization Method:</label>
+          <select name="optimization_method">
+            <option value="">None</option>
+            <option value="grid_search">Grid Search</option>
+            <option value="random_search">Random Search</option>
+          </select>
+
+          <button type="submit" name="action" value="Train Model">
+            Train Model
+          </button>
+        </form>
+      </div>
+
+      <div class="main-content">
+        <h1>Dataset Information</h1>
+
+        {% if data_preview %}
+        <h2>First 5 Rows of Dataset</h2>
+        <div class="data-preview">{{ data_preview | safe }}</div>
+
+        <h2>Column Names and Data Types</h2>
+        <ul>
+          {% for col, dtype in column_types.items() %}
+          <li>{{ col }}: {{ dtype }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        
+
+        <h1>Results</h1>
+        <p>Filename: {{ filename }}</p>
+
+        {% if statistical_summary %}
+        <h2>Statistical Summary</h2>
+        <div class="statistical-summary">
+            {{ statistical_summary | safe }}  <!-- Use safe to render HTML -->
+        </div>
+        {% endif %}
+
+        {% if accuracy or mse %}
+        <h2>Model Results</h2>
+
+        {% if accuracy %}
+        <p>Accuracy: {{ accuracy }}</p>
+        {% if auc_score %}
+        <p>AUC Score: {{ "%.4f"|format(auc_score) }}</p>
+        {% endif %}
+        <pre>{{ report }}</pre>
+        {% elif mse %}
+        <p>MSE: {{ mse }}</p>
+        <p>MAE: {{ mae }}</p>
+        <p>R2_score: {{ r2 }}</p>
+        {% endif %} 
+        {% if model_inference %}
+        <div class="info-panel">
+            <h5>Inference:</h5>
+            {{ model_inference }}
+        </div>
+        {% endif %} 
+
+        {% if confusion_matrix_url %}
+        <h2>Confusion Matrix</h2>
+        <img
+          src="data:image/png;base64,{{ confusion_matrix_url }}"
+          alt="Confusion Matrix"
+        />
+        {% endif %}
+
+        {% if roc_curve_url %}
+        <h2>ROC Curve</h2>
+        <img src="data:image/png;base64,{{ roc_curve_url }}" alt="ROC Curve" />
+        {% endif %}
+        {% endif %}
+
+        {% if plot_url %}
+        <h2>Generated Plot</h2>
+        <img src="data:image/png;base64,{{ plot_url }}" alt="Generated Plot" />
+        {% endif %}
+
+        {% if mse %} 
+        <h2>Regression Results</h2>
+        {% if regression_curve_url %}
+        <h2>Regression Curve</h2>
+        <img src="data:image/png;base64,{{ regression_curve_url }}" alt="Regression Curve" />
+        {% endif %}
+
+        {% if model_inference %}
+        <div class="info-panel">
+            <h5>Inference:</h5>
+            <p>{{ model_inference }}</p>
+        </div>
+        {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </body>
+</html>
